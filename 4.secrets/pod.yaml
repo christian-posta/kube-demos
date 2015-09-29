@@ -1,0 +1,22 @@
+#!/bin/bash
+
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: demos
+  name: secrets-demo-pod
+spec:
+  containers:
+  - name: busybox
+    image: busybox
+    command:
+    - sh
+    - -c
+    - while true; do sleep 3600; done
+    volumeMounts:
+      - name: my-password
+        mountPath: /data
+  volumes:
+  - name: my-password
+    secret:
+      secretName: my-secret-password
