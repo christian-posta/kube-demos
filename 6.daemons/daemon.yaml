@@ -1,0 +1,16 @@
+apiVersion: experimental/v1alpha1
+kind: DaemonSet
+metadata:
+  namespace: demos
+  name: daemons-demo-daemon
+spec:
+  template:
+    metadata:
+      labels:
+        demo: daemons
+    spec:
+      nodeSelector:
+        color: red
+      containers:
+      - name: hostname
+        image: kubernetes/serve_hostname
