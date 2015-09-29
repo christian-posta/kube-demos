@@ -15,4 +15,4 @@ NODE=$(kubectl get nodes \
         | tail -1 \
         | cut -f1 -d' ')
 gcloud compute ssh --zone=us-central1-b $NODE \
-    --command "while true; do curl -s $IP; sleep 0.5; done"
+    --command "while true; do curl --connect-timeout 1 -s $IP; sleep 0.5; done"

@@ -13,12 +13,12 @@ NODE=$(kubectl get nodes \
             | tail -1 \
             | cut -f1 -d' ')
 gcloud compute ssh --zone=us-central1-b $NODE \
-    --command "while true; do curl -s $IP; sleep 0.5; done"
+    --command "while true; do curl --connect-timeout 1 -s $IP; sleep 0.5; done"
 gcloud compute ssh --zone=us-central1-b $NODE \
-    --command "for i in \$(seq 1 500); do curl -s $IP; done | sort | uniq -c"
+    --command "for i in \$(seq 1 500); do curl --connect-timeout 1 -s $IP; done | sort | uniq -c"
 
 gcloud compute ssh --zone=us-central1-b $NODE \
-    --command "while true; do curl -s $IP; sleep 0.5; done"
+    --command "while true; do curl --connect-timeout 1 -s $IP; sleep 0.5; done"
 kubectl --namespace=demos scale rc hostnames --replicas=1
 kubectl --namespace=demos scale rc hostnames --replicas=2
 kubectl --namespace=demos scale rc hostnames --replicas=10

@@ -13,7 +13,7 @@ NODE=$(kubectl get nodes \
             | tail -1 \
             | cut -f1 -d' ')
 gcloud compute ssh --zone=us-central1-b $NODE \
-    --command "for IP in $IPS; do curl -s \$IP:9376; done"
+    --command "for IP in $IPS; do curl --connect-timeout 1 -s \$IP:9376; done"
 
 # Kill a pod.
 VICTIM=$(kubectl --namespace=demos get pods -o name -l run=hostnames | tail -1)
