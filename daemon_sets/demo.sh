@@ -1,26 +1,25 @@
 #!/bin/bash
 
+. $(dirname ${BASH_SOURCE})/../util.sh
+
 for NODE in $(kubectl get nodes -o name | cut -f2 -d/); do
-    kubectl label node $NODE color- --overwrite
+    kubectl label node $NODE color- --overwrite >/dev/null 2>&1
 done
 
-kubectl --namespace=demos create -f svc.yaml
+desc "No labels on nodes"
+run "kubectl get nodes \\
+    -o go-template='{{range .items}}{{.metadata.name}}{{\"\t\"}}{{.metadata.labels}}{{\"\n\"}}{{end}}'"
 
-kubectl --namespace=demos create -f daemon.yaml
-kubectl --namespace=demos describe ds daemons-demo-daemon
+desc "Run a service to front our daemon"
+run "cat $(relative svc.yaml)"
+run "kubectl --namespace=demos create -f $(relative svc.yaml)"
 
-for NODE in $(kubectl get nodes -o name | cut -f2 -d/); do
-    kubectl label node $NODE color- --overwrite
-    sleep 30
-done &
-kubectl --namespace=demos describe ds daemons-demo-daemon
+desc "Run our daemon"
+run "cat $(relative daemon.yaml)"
+run "kubectl --namespace=demos create -f $(relative daemon.yaml)"
+run "kubectl --namespace=demos describe ds daemons-demo-daemon"
 
-
-IP=$(kubectl --namespace=demos get svc daemon-demo-svc -o yaml \
-          | grep clusterIP \
-          | cut -f2 -d:)
-NODE=$(kubectl get nodes \
-            | tail -1 \
-            | cut -f1 -d' ')
-gcloud compute ssh --zone=us-central1-b $NODE \
-    --command "while true; do curl --connect-timeout 1 -s $IP; sleep 0.2; done"
+tmux new -d -s my-session \
+    "$(dirname ${BASH_SOURCE})/_daemon_1.sh" \; \
+    split-window -h -d "sleep 15; $(dirname $BASH_SOURCE)/_daemon_2.sh" \; \
+    attach \;

@@ -2,8 +2,6 @@
 
 . $(dirname ${BASH_SOURCE})/../util.sh
 
-###
-###
 desc "Create a service that fronts any version of this demo"
 run "cat $(relative svc.yaml)"
 run "kubectl --namespace=demos create -f $(relative svc.yaml)"
