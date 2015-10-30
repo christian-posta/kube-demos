@@ -1,5 +1,3 @@
-#!/bin/bash
-
 apiVersion: v1
 kind: Pod
 metadata:
@@ -14,8 +12,8 @@ spec:
     - -c
     - while true; do sleep 3600; done
     volumeMounts:
-      - name: my-password
-        mountPath: /data
+    - name: my-password
+      mountPath: /data
   volumes:
   - name: my-password
     secret:

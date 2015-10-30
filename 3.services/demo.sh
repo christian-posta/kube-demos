@@ -1,27 +1,38 @@
 #!/bin/bash
 
-kubectl --namespace=demos run hostnames --image=kubernetes/serve_hostname --replicas=5
+. $(dirname ${BASH_SOURCE})/../util.sh
 
-kubectl --namespace=demos expose rc hostnames --port=80 --target-port=9376
+if kubectl --namespace=demos get rc hostnames >/dev/null 2>&1; then
+    desc "Revisit our replication controller"
+    run "kubectl --namespace=demos get rc hostnames"
+else
+    desc "Run some pods under a replication controller"
+    run "kubectl --namespace=demos run hostnames \\
+        --image=kubernetes/serve_hostname --replicas=5"
+fi
 
-kubectl --namespace=demos describe svc hostnames
+desc "Expose the RC as a service"
+run "kubectl --namespace=demos expose rc hostnames \\
+    --port=80 --target-port=9376"
 
-IP=$(kubectl --namespace=demos get svc hostnames -o yaml \
-          | grep clusterIP \
-          | cut -f2 -d:)
-NODE=$(kubectl get nodes \
-            | tail -1 \
-            | cut -f1 -d' ')
-gcloud compute ssh --zone=us-central1-b $NODE \
-    --command "while true; do curl --connect-timeout 1 -s $IP; sleep 0.5; done"
-gcloud compute ssh --zone=us-central1-b $NODE \
-    --command "for i in \$(seq 1 500); do curl --connect-timeout 1 -s $IP; done | sort | uniq -c"
+desc "Have a look at the service"
+run "kubectl --namespace=demos describe svc hostnames"
 
-gcloud compute ssh --zone=us-central1-b $NODE \
-    --command "while true; do curl --connect-timeout 1 -s $IP; sleep 0.5; done"
-kubectl --namespace=demos scale rc hostnames --replicas=1
-kubectl --namespace=demos scale rc hostnames --replicas=2
-kubectl --namespace=demos scale rc hostnames --replicas=5
+IP=$(kubectl --namespace=demos get svc hostnames \
+    -o go-template='{{.spec.clusterIP}}')
+desc "See what happens when you access the service's IP"
+run "gcloud compute ssh --zone=us-central1-b $SSH_NODE --command '\\
+    for i in \$(seq 1 10); do \\
+        curl --connect-timeout 1 -s $IP; \\
+    done \\
+    '"
+run "gcloud compute ssh --zone=us-central1-b $SSH_NODE --command '\\
+    for i in \$(seq 1 500); do \\
+        curl --connect-timeout 1 -s $IP; \\
+    done | sort | uniq -c; \\
+    '"
 
-kubectl --namespace=demos get svc hostnames -o yaml | sed 's/ClusterIP/LoadBalancer'
-kubectl --namespace=demos get svc hostnames -o yaml | grep loadBalancer -A 4
+tmux new -d -s my-session \
+    "$(dirname ${BASH_SOURCE})/_scale_1.sh" \; \
+    split-window -h -d "sleep 15; $(dirname $BASH_SOURCE)/_scale_2.sh" \; \
+    attach \;

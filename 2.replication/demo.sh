@@ -39,7 +39,7 @@ run "gcloud compute ssh --zone=us-central1-b $NODE --command '\\
     sudo shutdown -r now; \\
     '"
 while true; do
-    run "kubectl get nodes"
+    run "kubectl --namespace=demos get node $NODE"
     status=$(kubectl --namespace=demos get node $NODE | tail -1 | awk '{print $3}')
     if [ "$status" == "NotReady" ]; then
         break

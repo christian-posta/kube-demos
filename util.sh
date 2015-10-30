@@ -29,9 +29,11 @@ function run() {
     echo "$green$1$reset" | pv -qL 25
     sleep 0.5
     eval "$1"
+    r=$?
     read -d '' -t 0.1 -n 10000 # clear stdin
     prompt
     read -s
+    return $r
 }
 
 function relative() {
