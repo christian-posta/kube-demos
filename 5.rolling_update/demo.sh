@@ -1,16 +1,18 @@
 #!/bin/bash
 
-kubectl --namespace=demos create -f svc.yaml
+. $(dirname ${BASH_SOURCE})/../util.sh
 
-kubectl --namespace=demos create -f rc-v1.yaml
+###
+###
+desc "Create a service that fronts any version of this demo"
+run "cat $(relative svc.yaml)"
+run "kubectl --namespace=demos create -f $(relative svc.yaml)"
 
-IP=$(kubectl --namespace=demos get svc update-demo-svc -o yaml \
-          | grep clusterIP \
-          | cut -f2 -d:)
-NODE=$(kubectl get nodes \
-            | tail -1 \
-            | cut -f1 -d' ')
-gcloud compute ssh --zone=us-central1-b $NODE \
-    --command "while true; do curl --connect-timeout 1 -s $IP; sleep 0.2; done"
+desc "Run v1 of our app"
+run "cat $(relative rc-v1.yaml)"
+run "kubectl --namespace=demos create -f $(relative rc-v1.yaml)"
 
-kubectl --namespace=demos rolling-update update-demo-rc-v1 -f rc-v2.yaml --update-period=10s
+tmux new -d -s my-session \
+    "$(dirname ${BASH_SOURCE})/_rolling_1.sh" \; \
+    split-window -h -d "sleep 15; $(dirname $BASH_SOURCE)/_rolling_2.sh" \; \
+    attach \;
