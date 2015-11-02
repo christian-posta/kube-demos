@@ -4,7 +4,7 @@
 
 desc "Run some pods under a replication controller"
 run "kubectl --namespace=demos run hostnames \\
-    --image=kubernetes/serve_hostname --replicas=5"
+    --image=gcr.io/google_containers/serve_hostname:1.1 --replicas=5"
 
 desc "Look what I made!"
 run "kubectl --namespace=demos describe rc hostnames"
@@ -20,7 +20,7 @@ run "kubectl --namespace=demos get pods -l run=hostnames \\
     -o go-template='{{range .items}}{{.status.podIP}}{{\"\\n\"}}{{end}}'"
 run "gcloud compute ssh --zone=us-central1-b $SSH_NODE --command '\\
     for IP in ${IPS[*]}; do \\
-        curl --connect-timeout 1 -s \$IP:9376; \\
+        curl --connect-timeout 1 -s \$IP:9376 && echo; \\
     done \\
     '"
 

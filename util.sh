@@ -11,7 +11,6 @@ function desc() {
     prompt
 }
 
-
 function prompt() {
     echo -n "$yellow\$ $reset"
 }
@@ -26,13 +25,21 @@ function maybe_first_prompt() {
 
 function run() {
     maybe_first_prompt
-    echo "$green$1$reset" | pv -qL 25
-    sleep 0.5
+    rate=25
+    if [ -n "$DEMO_RUN_FAST" ]; then
+      rate=1000
+    fi
+    echo "$green$1$reset" | pv -qL $rate
+    if [ -n "$DEMO_RUN_FAST" ]; then
+      sleep 0.5
+    fi
     eval "$1"
     r=$?
     read -d '' -t 0.1 -n 10000 # clear stdin
     prompt
-    read -s
+    if [ -z "$DEMO_AUTO_RUN" ]; then
+      read -s
+    fi
     return $r
 }
 
@@ -43,3 +50,5 @@ function relative() {
 }
 
 SSH_NODE=$(kubectl get nodes | tail -1 | cut -f1 -d' ')
+
+trap "echo" EXIT

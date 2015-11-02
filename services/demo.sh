@@ -8,7 +8,7 @@ if kubectl --namespace=demos get rc hostnames >/dev/null 2>&1; then
 else
     desc "Run some pods under a replication controller"
     run "kubectl --namespace=demos run hostnames \\
-        --image=kubernetes/serve_hostname --replicas=5"
+        --image=gcr.io/google_containers/serve_hostname:1.1 --replicas=5"
 fi
 
 desc "Expose the RC as a service"
@@ -23,12 +23,12 @@ IP=$(kubectl --namespace=demos get svc hostnames \
 desc "See what happens when you access the service's IP"
 run "gcloud compute ssh --zone=us-central1-b $SSH_NODE --command '\\
     for i in \$(seq 1 10); do \\
-        curl --connect-timeout 1 -s $IP; \\
+        curl --connect-timeout 1 -s $IP && echo; \\
     done \\
     '"
 run "gcloud compute ssh --zone=us-central1-b $SSH_NODE --command '\\
     for i in \$(seq 1 500); do \\
-        curl --connect-timeout 1 -s $IP; \\
+        curl --connect-timeout 1 -s $IP && echo; \\
     done | sort | uniq -c; \\
     '"
 
