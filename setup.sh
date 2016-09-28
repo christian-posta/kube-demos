@@ -9,5 +9,11 @@ desc "Create a namespace for these demos"
 run "cat $(relative demo-namespace.yaml)"
 run "kubectl create -f $(relative demo-namespace.yaml)"
 
+desc "For openshift, we need to enable deployer rights"
+run "oc policy add-role-to-user edit system:serviceaccount:demos:deployer"
+
 desc "Hey look, a namespace!"
 run "kubectl get namespaces"
+
+desc "Creating a demo folder for demos"
+run "mkdir -p demos"
