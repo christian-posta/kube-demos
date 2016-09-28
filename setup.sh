@@ -12,6 +12,9 @@ run "kubectl create -f $(relative demo-namespace.yaml)"
 desc "For openshift, we need to enable deployer rights"
 run "oc policy add-role-to-user edit system:serviceaccount:demos:deployer"
 
+desc "Also enable default service account to talk to Kube API"
+run "oc policy add-role-to-user edit system:serviceaccount:demos:default"
+
 desc "Hey look, a namespace!"
 run "kubectl get namespaces"
 

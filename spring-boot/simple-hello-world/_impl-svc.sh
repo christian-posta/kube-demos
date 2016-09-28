@@ -15,6 +15,8 @@ echo 'spring.application.name=helloservice' > src/main/resources/application.pro
 
 rm -fr src/test/
 
+mkdir -p src/main/fabric8
+
 
 awk '/<properties>/{x++} x==1{sub(/<properties>/,"&\n    <spring-cloud.version>Brixton.SR4</spring-cloud.version> \
 <spring-cloud-kubernetes.version>0.0.15</spring-cloud-kubernetes.version>")}1' pom.xml > tmp && mv tmp pom.xml

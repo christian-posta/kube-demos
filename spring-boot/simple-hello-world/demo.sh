@@ -3,6 +3,8 @@
 . $(dirname ${BASH_SOURCE})/../../util.sh
 
 desc "Getting a project from start.spring.io"
+desc "spring init --name simple-hello-world --boot-version 1.3.7.RELEASE --groupId=com.example --artifactId=simple-hello-world --dependencies=web,actuator --build=maven "
+read -s
 run "spring init --name simple-hello-world --boot-version 1.3.7.RELEASE --groupId=com.example --artifactId=simple-hello-world --dependencies=web,actuator --build=maven --extract $(relative project/simple-hello-world)"
 
 
@@ -12,7 +14,7 @@ run "ls -l "
 
 
 desc "Let's add some functionality"
-run "../../_do-impl.sh"
+run "../../_impl-svc.sh"
 
 desc "Open the project in your IDE!"
 run "idea ."
