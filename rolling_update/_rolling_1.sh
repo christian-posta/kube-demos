@@ -5,7 +5,7 @@
 IP=$(kubectl --namespace=demos get svc update-demo-svc \
         -o go-template='{{.spec.clusterIP}}')
 
-run "gcloud compute ssh --zone=us-central1-b $SSH_NODE --command '\\
+run "minishift ssh -- '\\
     while true; do \\
         curl --connect-timeout 1 -s $IP; \\
         sleep 0.5; \\

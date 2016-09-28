@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: hostnames
+spec:
+  replicas: 5
+  selector:
+    run: hostnames
+  template:
+    metadata:
+      labels:
+        run: hostnames
+    spec:
+      containers:
+      - image: gcr.io/google_containers/serve_hostname:1.1
+        imagePullPolicy: IfNotPresent
+        name: hostnames
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

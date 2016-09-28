@@ -35,7 +35,7 @@ function run() {
     fi
     eval "$1"
     r=$?
-    read -d '' -t 0.1 -n 10000 # clear stdin
+    read -d '' -t 1 -n 10000 # clear stdin
     prompt
     if [ -z "$DEMO_AUTO_RUN" ]; then
       read -s
