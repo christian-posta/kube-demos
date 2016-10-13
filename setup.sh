@@ -18,5 +18,3 @@ run "oc policy add-role-to-user edit system:serviceaccount:demos:default"
 desc "Hey look, a namespace!"
 run "kubectl get namespaces"
 
-desc "Creating a demo folder for demos"
-run "mkdir -p demos"

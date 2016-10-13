@@ -16,8 +16,6 @@ run "ls -l "
 desc "Let's add some functionality"
 run "../../_impl-svc.sh"
 
-desc "Open the project in your IDE!"
-run "idea ."
 
 desc "Build and run the project; query the endpoint in a different screen: curl http://localhost:8080/api/hello/ceposta"
 run "mvn spring-boot:run"
@@ -25,7 +23,7 @@ run "mvn spring-boot:run"
 desc "Let's add the fabric8 magic!"
 desc "mvn io.fabric8:fabric8-maven-plugin:LATEST:setup"
 read -s
-run "mvn io.fabric8:fabric8-maven-plugin:3.1.59:setup"
+run "mvn io.fabric8:fabric8-maven-plugin:3.1.71:setup"
 run "tail -n 30 pom.xml"
 
 ## We need to find out if minishift is running and stop it
@@ -38,7 +36,7 @@ run "tail -n 30 pom.xml"
 
 desc "Now that we have our cloud app server up let's build our project"
 run "mvn clean install"
-run "idea target/classes/META-INF/fabric8/kubernetes.yml"
+run "cat target/classes/META-INF/fabric8/kubernetes.yml"
 
 desc "Let's deploy our app!"
 run "mvn fabric8:run"

@@ -21,6 +21,14 @@ mkdir -p src/main/fabric8
 awk '/<properties>/{x++} x==1{sub(/<properties>/,"&\n    <spring-cloud.version>Brixton.SR4</spring-cloud.version> \
 <spring-cloud-kubernetes.version>0.0.15</spring-cloud-kubernetes.version>")}1' pom.xml > tmp && mv tmp pom.xml
 
+awk '/org.springframework.boot.autoconfigure.SpringBootApplication;/{x++} x==1{sub(/org.springframework.boot.autoconfigure.SpringBootApplication;/,"&\nimport org.springframework.web.bind.annotation.PathVariable;\
+import org.springframework.web.bind.annotation.RequestMapping;\
+import org.springframework.web.bind.annotation.RequestMethod;\
+import org.springframework.web.bind.annotation.RestController;\
+\
+import java.util.HashMap;\
+import java.util.Map;")}1' src/main/java/com/example/SimpleHelloWorldApplication.java > tmp && mv tmp src/main/java/com/example/SimpleHelloWorldApplication.java
+
 
 awk '/<\/dependencies>/{x++} x==1{sub(/<\/dependencies>/,"&\n <dependencyManagement> \
 <dependencies> \
