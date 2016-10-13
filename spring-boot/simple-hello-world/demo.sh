@@ -16,6 +16,8 @@ run "ls -l "
 desc "Let's add some functionality"
 run "../../_impl-svc.sh"
 
+desc "Open the project in your IDE if you'd like"
+read -s
 
 desc "Build and run the project; query the endpoint in a different screen: curl http://localhost:8080/api/hello/ceposta"
 run "mvn spring-boot:run"

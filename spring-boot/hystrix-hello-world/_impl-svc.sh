@@ -12,7 +12,7 @@ fi
 
 
 echo 'spring.application.name=hystrix-hello-world' > src/main/resources/application.properties
-echo 'server.port=8081' >> src/main/resources/application.properties
+echo '#server.port=8081' >> src/main/resources/application.properties
 
 rm -fr src/test/
 
@@ -61,6 +61,16 @@ class HelloController {
 
 
 EOF
+
+awk '/org.springframework.boot.autoconfigure.SpringBootApplication;/{x++} x==1{sub(/org.springframework.boot.autoconfigure.SpringBootApplication;/,"&\nimport org.springframework.web.bind.annotation.PathVariable;\
+import org.springframework.web.bind.annotation.RequestMapping;\
+import org.springframework.web.bind.annotation.RequestMethod;\
+import org.springframework.web.bind.annotation.RestController;\
+import org.springframework.web.client.RestTemplate;\
+\
+import java.net.InetAddress;\
+import java.util.HashMap;\
+import java.util.Map;")}1' src/main/java/com/example/HystrixHelloWorldApplication.java > tmp && mv tmp src/main/java/com/example/HystrixHelloWorldApplication.java
 
 
 sed -i '' 's/SR6/SR4/g' pom.xml

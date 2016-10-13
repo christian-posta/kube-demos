@@ -16,10 +16,22 @@ run "ls -l "
 desc "Let's add some functionality"
 run "../../_impl-svc.sh"
 
-desc "Open the project in your IDE!"
-run "idea ."
+desc "Open the project in your IDE if you'd like"
+read -s
 
 desc "Build and run the project; query the endpoint in a different screen: curl http://localhost:8080/api/hello/ceposta"
+run "mvn spring-boot:run"
+
+desc "I'll wait for you to fix the port stuff and run simple-hello-world"
+read -s
+
+desc "Try running again.."
+run "mvn spring-boot:run"
+
+desc "I'll wait for you to add the circuit breaker"
+read -s
+
+desc "Try running again.."
 run "mvn spring-boot:run"
 
 desc "Let's add the fabric8 magic!"
