@@ -5,14 +5,15 @@
 
 cd $(relative project/simple-hello-world)
 
-desc "Make sure fabric8:run is already running!"
-read -s
 
 desc "Let's create a ConfigMap"
 run "cat helloserviceConfigMap.yml"
 run "kubectl create -f helloserviceConfigMap.yml"
 run "kubectl get configMap"
 run "kubectl get configMap helloservice -o yaml"
+
+desc "Update your code to use some application properties"
+read -s
 
 desc "Run our app outside kubernetes, but connected to it"
 run "mvn spring-boot:run"

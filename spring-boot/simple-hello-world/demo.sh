@@ -37,6 +37,7 @@ run "tail -n 30 pom.xml"
 desc "Now that we have our cloud app server up let's build our project"
 run "mvn clean install"
 run "cat target/classes/META-INF/fabric8/kubernetes.yml"
+run "docker images | head -n 10"
 
 desc "Let's deploy our app!"
 run "mvn fabric8:run"
