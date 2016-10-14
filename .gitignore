@@ -6,3 +6,4 @@ target
 .project
 .settings
 spring-boot/**/project/**
+ticket-monster-msa/**/project/**
