@@ -25,9 +25,25 @@ run "kubectl --namespace=demos get svc"
 desc "Smoke test v2 in another window"
 read -s
 
+desc "Everything looks good! Let's upgrade!"
+read -s
+
 desc "Patch the route to switch from blue to green"
 run "oc patch route/bluegreen -p '{\"spec\": {\"to\": {\"name\": \"app-green-v2\" }}}'"
 
 desc "Does everything look okay? Oh, no? fail back!"
 read -s
 run "oc patch route/bluegreen -p '{\"spec\": {\"to\": {\"name\": \"app-blue-v1\" }}}'"
+
+desc "BONUS!!!!!! what about A/B weighted routing!?"
+read -s
+
+desc "Maybe we just want to treat this as A/B test?"
+desc "Note... Blue/Green is NOT the same as A/B, but we'll illustrated weighted routing here:"
+read -s
+
+run "oc patch route/bluegreen -p '{\"spec\": { \"alternateBackends\" : [{ \"kind\": \"Service\", \"name\": \"app-green-v2\", \"weight\": 25}], \"to\": {\"weight\": 75}}}'"
+
+
+
+
