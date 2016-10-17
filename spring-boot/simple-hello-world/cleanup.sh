@@ -10,6 +10,8 @@ oc delete rc $(oc get rc --namespace=demos | grep ^[a-z] | awk '{print $1}') --n
 oc delete configmap $(oc get configmap --namespace=demos | grep ^[a-z] | awk '{print $1}') --namespace=demos
 oc delete route $(oc get route --namespace=demos | grep ^[a-z] | awk '{print $1}') --namespace=demos
 oc delete pod $(oc get pod --namespace=demos | awk '{print $1}')
+oc delete is simple-hello-world --namespace=demos
+oc delete bc/simple-hello-world-s2i
 
 oc delete build $(oc get builds | grep -i complete | grep simple-hello-world | awk '{print $1}')
 
