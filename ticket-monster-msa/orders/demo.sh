@@ -67,5 +67,11 @@ run "mvn -Pdb-migration-mysql liquibase:tag -Dliquibase.tag=v2.0"
 tmux send-keys -t bottom C-c
 tmux send-keys -t bottom C-z 'exit' Enter
 
+
+## slight of hand.. bounce the UI pod because we've prob changed the tm-search service IP
+## be deleting and restarting it. Typically the UI service would deploy its own tm-search with
+## appropriate selectors, etc. but we'll hide it by bouncing it here:
+oc delete pod $(oc get pod | grep ticket-monster-ui | awk '{print $1}') > /dev/null 2>&1
+
 desc "Go make sure UI works"
 read -s
