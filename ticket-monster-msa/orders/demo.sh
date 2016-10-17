@@ -49,6 +49,23 @@ tmux send-keys -t bottom C-c
 tmux send-keys -t bottom C-z 'exit' Enter
 
 desc "show tables"
-read -s
 run "$SOURCE_DIR/mysql -e 'show tables;'"
 
+read -s
+
+tmux split-window -v -d -c $SOURCE_DIR
+tmux send-keys -t bottom C-z './_port-forward-mysql.sh' Enter
+
+desc "Let's add tables, data to the database using liquibase"
+read -s
+
+
+run "mvn -Pdb-migration-mysql liquibase:status"
+run "mvn -Pdb-migration-mysql liquibase:update"
+run "mvn -Pdb-migration-mysql liquibase:tag -Dliquibase.tag=v2.0"
+
+tmux send-keys -t bottom C-c
+tmux send-keys -t bottom C-z 'exit' Enter
+
+desc "Go make sure UI works"
+read -s

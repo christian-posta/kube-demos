@@ -14,6 +14,7 @@ oc delete svc mysqlorders --namespace=demos
 oc delete pod $(oc get pod --namespace=demos | grep ticket-monster-orders |awk '{print $1}')
 oc delete is ticket-monster-orders --namespace=demos
 oc delete bc ticket-monster-orders --namespace=demos
+oc delete build $(oc get builds | grep -i complete | grep ticket-monster-orders | awk '{print $1}')
 
 oc delete template ticket-monster-mysql  --namespace=demos
 

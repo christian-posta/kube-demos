@@ -33,8 +33,13 @@
 ######################
 
 
-desc "show tables"
-run "$(relative mysql) -e 'show tables;'"
+#desc "show tables"
+#run "$(relative mysql) -e 'show tables;'"
 
 ######################
+
+SOURCE_DIR=$PWD
+tmux split-window -v -d -c $SOURCE_DIR
+tmux send-keys -t bottom C-z './_port-forward-mysql.sh' Enter
+
 

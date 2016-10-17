@@ -2,7 +2,7 @@
 
 . $(dirname ${BASH_SOURCE})/../../util.sh
 
-until $(curl --output /dev/null --silent --head --fail http://localhost:8080/node); do
+until $(curl --output /dev/null --silent --head --fail http://localhost:8080/health); do
     sleep 5
 done
 

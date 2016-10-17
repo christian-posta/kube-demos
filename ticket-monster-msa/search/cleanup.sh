@@ -13,5 +13,7 @@ oc delete pod $(oc get pod --namespace=demos | grep ticket-monster-search |awk '
 oc delete is ticket-monster-search --namespace=demos
 oc delete bc ticket-monster-search --namespace=demos
 
+oc delete build $(oc get builds | grep -i complete | grep ticket-monster-search | awk '{print $1}')
+
 echo "removing docker images that have 'example' in their name"
 docker rmi -f $(docker images | grep ticket-monster-search | awk '{print $3}')
