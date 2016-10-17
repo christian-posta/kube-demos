@@ -7,3 +7,4 @@ target
 .settings
 spring-boot/**/project/**
 ticket-monster-msa/**/project/**
+camel/**/project/**
