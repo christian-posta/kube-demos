@@ -2,6 +2,9 @@
 
 . $(dirname ${BASH_SOURCE})/../util.sh
 
+SOURCE_DIR=$PWD
+
+
 if kubectl --namespace=demos get rc hostnames >/dev/null 2>&1; then
     desc "Revisit our replication controller"
     run "kubectl --namespace=demos get rc hostnames"
@@ -36,12 +39,19 @@ run "minishift ssh -- '\\
     done | sort | uniq -c; \\
     '"
 
+desc "Let's do some scaling"
+
+tmux split-window -v -d -c $SOURCE_DIR
+tmux send-keys -t bottom C-z './_scale_1.sh' Enter
+
+desc "Resize the RC and watch the service backends change"
+run "kubectl --namespace=demos scale rc hostnames --replicas=1"
+run "kubectl --namespace=demos scale rc hostnames --replicas=2"
+run "kubectl --namespace=demos scale rc hostnames --replicas=5"
+
+tmux send-keys -t bottom C-c
+tmux send-keys -t bottom C-z 'exit' Enter
+
 desc "Let's cleanup and delete that deployment"
 run "kubectl --namespace=demos delete rc hostnames"
 run "kubectl --namespace=demos delete svc hostnames"
-
-echo "Manually show the scaling part by using tmux"
-#tmux new -d -s my-session \
-#    "$(dirname ${BASH_SOURCE})/_scale_1.sh" \; \
-#    split-window -h -d "sleep 15; $(dirname $BASH_SOURCE)/_scale_2.sh" \; \
-#    attach \;
