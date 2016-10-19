@@ -13,5 +13,5 @@ oc delete is threescalegw --namespace=demos
 oc delete is threescalegw-centos --namespace=demos
 oc delete build $(oc get builds | grep -i complete | grep threescalegw | awk '{print $1}')
 
-docker rmi -f $(docker images | grep api-router-app | awk '{print $3}')
+docker rmi -f $(docker images | grep threescalegw | awk '{print $3}')
 
