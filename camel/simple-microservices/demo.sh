@@ -16,13 +16,11 @@ run "cd helloswarm"
 run "mvn clean install"
 run "mvn fabric8:deploy"
 
-desc "now let's deploy the client"
-run "cd ../client"
-run "mvn clean install"
+desc "see what's been deployed"
+run "oc get pod"
+run "oc get service"
 
-run "mvn fabric8:run"
-
-desc "now let's deploy the circtui breaker client"
+desc "now let's deploy the client with a circuit breaker"
 run "cd ../client-hystrix"
 run "mvn clean install"
 
