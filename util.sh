@@ -23,6 +23,11 @@ function maybe_first_prompt() {
     fi
 }
 
+function backtotop() {
+    read -s 
+    clear
+}
+
 function run() {
     maybe_first_prompt
     rate=25
