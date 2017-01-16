@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONTAINERS="zookeeper kafka mysql connect mysqlterm"
+CONTAINERS="zookeeper kafka mysql connect mysqlterm watcher"
 
 kill -14 $(ps aux | grep minishift | grep vnNTL | awk '{print $2}') > /dev/null 2>&1
 

@@ -1,0 +1,17 @@
+{
+  "schema": {
+    "type": "struct",
+    "name": "dbserver1.inventory.customers.Key",
+    "optional": false,
+    "fields": [
+      {
+        "field": "id",
+        "type": "int32",
+        "optional": false
+      }
+    ]
+  },
+  "payload": {
+    "id": 1004
+  }
+}

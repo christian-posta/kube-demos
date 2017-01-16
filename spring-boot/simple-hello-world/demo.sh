@@ -18,6 +18,7 @@ run "ls -l "
 desc "Let's add some functionality"
 run "../../_impl-svc.sh"
 desc "Open the project in your IDE if you'd like"
+run "idea ."
 
 backtotop
 
@@ -49,11 +50,4 @@ run "docker images | head -n 10"
 
 backtotop
 desc "Let's deploy our app!"
-tmux split-window -v
-tmux select-layout even-vertical
-tmux select-pane -t 0
-SERVICE_IP=$(oc get svc | grep simple-hello-world | awk '{print $2}')
-tmux send-keys -t 1 "clear" C-m
-tmux send-keys -t 1 "minishift ssh -- curl -s http://$SERVICE_IP/api/hello/ceposta"
-read -s 
 run "mvn fabric8:run"
