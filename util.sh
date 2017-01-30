@@ -24,7 +24,7 @@ function maybe_first_prompt() {
 }
 
 function backtotop() {
-    read -s 
+    
     clear
 }
 
