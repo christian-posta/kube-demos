@@ -65,6 +65,7 @@ run "mvn -Pdb-migration-mysql liquibase:update"
 run "mvn -Pdb-migration-mysql liquibase:tag -Dliquibase.tag=v2.0"
 
 tmux send-keys -t bottom C-c
+sleep 1
 tmux send-keys -t bottom C-z 'exit' Enter
 
 
