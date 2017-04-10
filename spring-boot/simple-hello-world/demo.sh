@@ -18,7 +18,6 @@ run "ls -l "
 desc "Let's add some functionality"
 run "../../_impl-svc.sh"
 desc "Open the project in your IDE if you'd like"
-run "idea ."
 
 backtotop
 

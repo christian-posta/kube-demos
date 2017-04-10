@@ -116,6 +116,14 @@ run "docker ps"
 
 
 backtotop
+
+desc "Let's list the topics in Kafka at this moment"
+tmux send-keys -t 1 C-l
+read -s
+
+tmux send-keys -t 1 "docker run -it --name watcher --rm --link zookeeper:zookeeper debezium/kafka:0.3 list-topics -a -k dbserver1.inventory.customers" C-m
+read -s 
+
 desc "Let's subscribe to a kafka topic that should have the customers table data"
 tmux send-keys -t 1 C-l
 read -s

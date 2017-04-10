@@ -64,6 +64,12 @@ run "mvn -Pdb-migration-mysql liquibase:status"
 run "mvn -Pdb-migration-mysql liquibase:update"
 run "mvn -Pdb-migration-mysql liquibase:tag -Dliquibase.tag=v2.0"
 
+# we need to port forward the mysqlorders mysql
+# then we need run import.sql
+# CONNECT_POD_NAME=$(kubectl get pod | grep -i running | grep ^mysqlorders| awk '{ print $1 }')
+# kubectl port-forward $CONNECT_POD_NAME 3306:3306
+# mysql ticketmonster -h127.0.0.1 -uticket -pmonster < src/main/resources/import.sql
+
 tmux send-keys -t bottom C-c
 sleep 1
 tmux send-keys -t bottom C-z 'exit' Enter
