@@ -8,4 +8,4 @@ target
 spring-boot/**/project/**
 ticket-monster-msa/**/project/**
 camel/**/project/**
-service-mesh/istio/**/project/**
+service-mesh/**/project/**
