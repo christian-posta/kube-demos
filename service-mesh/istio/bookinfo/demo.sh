@@ -4,6 +4,18 @@
 
 APP_DIR=app
 
+ISTIO_LIST="istioctl list"
+
+if [ "$1" == "--upstream" ]; then
+    echo "installing demo from upstream..."
+    APP_DIR=$(relative ../setup/project/istio/demos/apps/bookinfo)
+    source $(relative ../setup/project/istio/istio.VERSION)
+    ISTIO_LIST="istioctl get"
+    
+fi
+
+echo "Using APPDIR=$APP_DIR"
+
 # Let's find the dashboard URL
 GRAFANA_HOST=$(oc get pod $(oc get pod | grep -i running | grep grafana | awk '{print $1 }') -o yaml | grep hostIP | cut -d ':' -f2 | xargs)
 GRAFANA_PORT=$(oc get svc/grafana -o yaml | grep nodePort | cut -d ':' -f2 | xargs)
@@ -42,7 +54,7 @@ desc "we should set some routing rules for the istio proxy"
 read -s
 desc "we currently don't have any rules"
 read -s
-run "istioctl list route-rule"
+run "$ISTIO_LIST route-rule"
 
 desc "We need to force all traffic to v1 of the reviews service"
 read -s
@@ -58,7 +70,7 @@ desc "Now go to the app and make sure all the traffic goes to the v1 reviews"
 read -s
 
 desc "now if we list the route rules, we should see our new rules"
-run "istioctl list route-rule"
+run "$ISTIO_LIST route-rule"
 
 desc "we also see that these rules are stored in kubernetes as 'istioconfig'"
 desc "we can use vanilla kubernetes TPR to get these configs"
@@ -81,7 +93,7 @@ run "istioctl create -f $APP_DIR/route-rule-reviews-test-v2.yaml"
 
 desc "let's look at the route rules"
 read -s
-run "istioctl list route-rule"
+run "$ISTIO_LIST route-rule"
 run "istioctl get route-rule reviews-test-v2"
 run "istioctl get route-rule reviews-default"
 

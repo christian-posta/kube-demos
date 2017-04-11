@@ -23,3 +23,4 @@ kubectl delete svc/istio-manager
 kubectl delete svc/istio-mixer
 
 kubectl delete cm/mixer-config
+kubectl delete cm/istio
