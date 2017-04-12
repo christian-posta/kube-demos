@@ -9,3 +9,4 @@ spring-boot/**/project/**
 ticket-monster-msa/**/project/**
 camel/**/project/**
 service-mesh/**/project/**
+javac-services.**

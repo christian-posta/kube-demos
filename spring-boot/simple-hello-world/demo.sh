@@ -2,6 +2,11 @@
 
 . $(dirname ${BASH_SOURCE})/../../util.sh
 
+# we want to be able to interact with the services 
+oc adm policy add-cluster-role-to-user cluster-admin system:serviceaccount:demos:exposecontroller > /dev/null 2>&1
+oc apply -f http://central.maven.org/maven2/io/fabric8/devops/apps/exposecontroller/2.2.327/exposecontroller-2.2.327-openshift.yml > /dev/null 2>&1
+oc get cm/exposecontroller -o yaml | sed s/Route/NodePort/g | oc apply -f - > /dev/null 2>&1
+
 desc "Getting a project from start.spring.io"
 desc "spring init --name simple-hello-world --boot-version 1.3.7.RELEASE --groupId=com.example --artifactId=simple-hello-world --dependencies=web,actuator --build=maven "
 read -s

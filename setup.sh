@@ -18,3 +18,5 @@ run "oc policy add-role-to-user view system:serviceaccount:$(oc project -q):defa
 desc "Hey look, a namespace!"
 run "kubectl get namespaces"
 
+
+
