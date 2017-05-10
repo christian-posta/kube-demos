@@ -143,6 +143,10 @@ desc "We'll direct 50% of the traffic to this new version"
 read -s
 run "cat $(relative $APP_DIR/route-rule-reviews-50-v3.yaml)"
 
+backtotop
+desc "Run some tests to verify the 50/50 split"
+read -s
+
 desc "Install our new routing rule"
 run "istioctl replace -f $(relative $APP_DIR/route-rule-reviews-50-v3.yaml)"
 
