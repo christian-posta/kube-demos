@@ -152,7 +152,7 @@ desc "We see that the product reviews are not available at all!!"
 desc "we've found a bug!"
 read -s
 desc "Dang! The product page has a timeout of 3s"
-desc "https://github.com/istio/istio/blob/master/demos/apps/bookinfo/src/productpage/productpage.py#L122"
+desc "https://github.com/istio/istio/blob/master/demos/apps/bookinfo/src/productpage/productpage.py#L140"
 
 read -s
 backtotop
