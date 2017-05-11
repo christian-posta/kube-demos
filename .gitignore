@@ -6,6 +6,7 @@ target
 .project
 .settings
 spring-boot/**/project/**
+**/cli/**
 ticket-monster-msa/**/project/**
 camel/**/project/**
 service-mesh/**/project/**

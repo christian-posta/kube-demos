@@ -4,36 +4,64 @@
 
 APP_DIR=app
 
-ISTIO_LIST="istioctl list"
+ISTIOCTL="$(which istioctl)"
+
+ISTIO_LIST="$ISTIOCTL list"
 
 if [ "$1" == "--upstream" ]; then
     echo "installing demo from upstream..."
     APP_DIR=$(relative ../setup/project/istio/demos/apps/bookinfo)
     source $(relative ../setup/project/istio/istio.VERSION)
-    ISTIO_LIST="istioctl get"
-    
+    ISTIOCTL="$(relative ../setup/cli/istioctl)"
+    ISTIO_LIST="$ISTIOCTL get"
+        
 fi
 
 echo "Using APPDIR=$APP_DIR"
+echo "Using istioctl from $ISTIOCTL"
+echo "Press <enter> to continue..."
+read -s 
 
 # Let's find the dashboard URL
 GRAFANA_HOST=$(oc get pod $(oc get pod | grep -i running | grep grafana | awk '{print $1 }') -o yaml | grep hostIP | cut -d ':' -f2 | xargs)
 GRAFANA_PORT=$(oc get svc/grafana -o yaml | grep nodePort | cut -d ':' -f2 | xargs)
+ISTIO_GRAFANA_URL=http://$GRAFANA_HOST\:$GRAFANA_PORT/dashboard/db/istio-dashboard
 
-ISTIO_DASHBOARD_URL=http://$GRAFANA_HOST\:$GRAFANA_PORT/dashboard/db/istio-dashboard
+SERVICE_GRAPH=$(kubectl get po -l app=servicegraph -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc servicegraph -o jsonpath={.spec.ports[0].nodePort})
+SERVICE_GRAPH_URL=http://$SERVICE_GRAPH/dotviz
 
-desc "Let's open the grafana dashboard"
-run "open $ISTIO_DASHBOARD_URL"
+
+
+
+desc "Let's open the grafana and zipkin dashboard"
+run "open $ISTIO_GRAFANA_URL; open $SERVICE_GRAPH_URL"
+
+if [ "$2" == "--zipkin" ]; then
+    # Let's find the zipkin URL
+    ZIPKIN_HOST=$(oc get pod $(oc get pod | grep -i running | grep zipkin | awk '{print $1 }') -o yaml | grep hostIP | cut -d ':' -f2 | xargs)
+    ZIPKIN_PORT=$(oc get svc/zipkin -o yaml | grep nodePort | cut -d ':' -f2 | xargs)
+    ISTIO_ZIPKIN_URL=http://$ZIPKIN_HOST\:$ZIPKIN_PORT/
+    run "open $ISTIO_ZIPKIN_URL"
+fi 
 
 desc "let's take a look at the app"
 run "cat $(relative $APP_DIR/bookinfo.yaml)"
 
-
 desc "let's add the istio proxy"
-run "istioctl kube-inject -f $(relative $APP_DIR/bookinfo.yaml)"
+if [ "$2" == "--zipkin" ]; then
+    run "$ISTIOCTL kube-inject --hub docker.io/ijsnellf --tag zipkin -f $(relative $APP_DIR/bookinfo.yaml)"
+else
+    run "$ISTIOCTL kube-inject -f $(relative $APP_DIR/bookinfo.yaml)"    
+fi 
+
 
 desc "deploy the bookinfo app with istio proxy enabled"
-run "kubectl apply -f <(istioctl kube-inject -f $(relative $APP_DIR/bookinfo.yaml))"
+if [ "$2" == "--zipkin" ]; then
+    run "kubectl apply -f <($ISTIOCTL kube-inject --hub docker.io/ijsnellf --tag zipkin -f $(relative $APP_DIR/bookinfo.yaml))"
+else
+    run "kubectl apply -f <($ISTIOCTL kube-inject -f $(relative $APP_DIR/bookinfo.yaml))"        
+fi 
+
 
 desc "take a look at the services we now have"
 run "kubectl get services"
@@ -42,7 +70,7 @@ desc "take a look at the pods we now have"
 run "kubectl get pods"
 
 # define the gateway rul
-GATEWAY_URL=$(kubectl get po -l infra=istio-ingress-controller -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc istio-ingress-controller -o jsonpath={.spec.ports[0].nodePort})
+GATEWAY_URL=$(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc istio-ingress -o jsonpath={.spec.ports[0].nodePort})
 
 
 backtotop
@@ -63,7 +91,7 @@ read -s
 run "cat $(relative $APP_DIR/route-rule-all-v1.yaml)"
 
 desc "update the istio routing rules"
-run "istioctl create -f $(relative $APP_DIR/route-rule-all-v1.yaml)"
+run "$ISTIOCTL create -f $(relative $APP_DIR/route-rule-all-v1.yaml)"
 
 backtotop
 desc "Now go to the app and make sure all the traffic goes to the v1 reviews"
@@ -89,13 +117,13 @@ read -s
 run "cat $APP_DIR/route-rule-reviews-test-v2.yaml"
 
 desc "Let's make the change"
-run "istioctl create -f $APP_DIR/route-rule-reviews-test-v2.yaml"
+run "$ISTIOCTL create -f $APP_DIR/route-rule-reviews-test-v2.yaml"
 
 desc "let's look at the route rules"
 read -s
 run "$ISTIO_LIST route-rule"
-run "istioctl get route-rule reviews-test-v2"
-run "istioctl get route-rule reviews-default"
+run "$ISTIOCTL get route-rule reviews-test-v2"
+run "$ISTIOCTL get route-rule reviews-default"
 
 desc "No go to your browser and refresh the app.. should still see v2 of the reviews"
 desc "But if you login as jason, you should see the new, v2"
@@ -114,7 +142,7 @@ read -s
 desc "see source here: https://github.com/istio/istio/blob/master/demos/apps/bookinfo/src/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java#L64"
 read -s
 run "cat $(relative $APP_DIR/destination-ratings-test-delay.yaml)"
-run "istioctl create -f $(relative $APP_DIR/destination-ratings-test-delay.yaml)"
+run "$ISTIOCTL create -f $(relative $APP_DIR/destination-ratings-test-delay.yaml)"
 
 backtotop
 desc "Now go to the productpage and test the delay"
@@ -130,7 +158,7 @@ read -s
 backtotop
 desc "We could change the fault injection to a shorter duration"
 read -s
-desc "cat $APP_DIR/destination-ratings-test-delay.yaml | sed s/5.0/2.5/g | istioctl replace"
+desc "cat $APP_DIR/destination-ratings-test-delay.yaml | sed s/5.0/2.5/g | $ISTIOCTL replace"
 read -s
 desc "Or we should fix the bug in the reviews app (ie, should not be 10s timeout)"
 read -s
@@ -148,7 +176,7 @@ desc "Run some tests to verify the 50/50 split"
 read -s
 
 desc "Install our new routing rule"
-run "istioctl replace -f $(relative $APP_DIR/route-rule-reviews-50-v3.yaml)"
+run "$ISTIOCTL replace -f $(relative $APP_DIR/route-rule-reviews-50-v3.yaml)"
 
 desc "If we're confident now this is a good change, we can route all traffic that way"
-run "istioctl replace -f $(relative $APP_DIR/route-rule-reviews-v3.yaml)"
+run "$ISTIOCTL replace -f $(relative $APP_DIR/route-rule-reviews-v3.yaml)"

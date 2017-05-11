@@ -1,6 +1,7 @@
 #!/bin/bash
+. $(dirname ${BASH_SOURCE})/../../../util.sh
 
-
+rm $(relative cli/istioctl)
 
 # delete addons
 kubectl delete deploy/grafana
@@ -24,3 +25,15 @@ kubectl delete svc/istio-mixer
 
 kubectl delete cm/mixer-config
 kubectl delete cm/istio
+
+# some of the new things
+kubectl delete cm/prometheus
+kubectl delete svc/istio-egress
+kubectl delete svc/istio-ingress
+kubectl delete svc/zipkin
+kubectl delete deploy/istio-egress
+kubectl delete deploy/istio-ingress
+kubectl delete deploy/zipkin
+kubectl delete sa/istio-ingress-service-account 
+kubectl delete sa/istio-manager-service-account 
+kubectl delete deploy/servicegraph
