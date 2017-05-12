@@ -10,7 +10,7 @@ ISTIO_LIST="$ISTIOCTL list"
 
 if [ "$1" == "--upstream" ]; then
     echo "installing demo from upstream..."
-    APP_DIR=$(relative ../setup/project/istio/demos/apps/bookinfo)
+    APP_DIR=$(relative ../setup/project/istio/samples/apps/bookinfo)
     source $(relative ../setup/project/istio/istio.VERSION)
     ISTIOCTL="$(relative ../setup/cli/istioctl)"
     ISTIO_LIST="$ISTIOCTL get"
