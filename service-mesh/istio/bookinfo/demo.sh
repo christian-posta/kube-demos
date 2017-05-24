@@ -31,21 +31,16 @@ SERVICE_GRAPH=$(kubectl get po -l app=servicegraph -o jsonpath={.items[0].status
 SERVICE_GRAPH_URL=http://$SERVICE_GRAPH/dotviz
 
 
-if [ "$2" == "--zipkin" ]; then
-    # Let's find the zipkin URL
-    ZIPKIN_HOST=$(oc get pod $(oc get pod | grep -i running | grep zipkin | awk '{print $1 }') -o yaml | grep hostIP | cut -d ':' -f2 | xargs)
-    ZIPKIN_PORT=$(oc get svc/zipkin -o yaml | grep nodePort | cut -d ':' -f2 | xargs)
-    ISTIO_ZIPKIN_URL=http://$ZIPKIN_HOST\:$ZIPKIN_PORT/
-fi 
+
+ZIPKIN_HOST=$(oc get pod $(oc get pod | grep -i running | grep zipkin | awk '{print $1 }') -o yaml | grep hostIP | cut -d ':' -f2 | xargs)
+ZIPKIN_PORT=$(oc get svc/zipkin -o yaml | grep nodePort | cut -d ':' -f2 | xargs)
+ISTIO_ZIPKIN_URL=http://$ZIPKIN_HOST\:$ZIPKIN_PORT/
+
 
 desc "Let's open the grafana and zipkin dashboard"
 read -s
-if [ "$2" == "--zipkin" ]; then
     
-    open $ISTIO_GRAFANA_URL; open $SERVICE_GRAPH_URL; open $ISTIO_ZIPKIN_URL
-else    
-    open $ISTIO_GRAFANA_URL; open $SERVICE_GRAPH_URL
-fi
+open $ISTIO_GRAFANA_URL; open $SERVICE_GRAPH_URL; open $ISTIO_ZIPKIN_URL
 
 read -s
 
@@ -53,19 +48,13 @@ desc "let's take a look at the app"
 run "cat $(relative $APP_DIR/bookinfo.yaml)"
 
 desc "let's add the istio proxy"
-if [ "$2" == "--zipkin" ]; then
-    run "$ISTIOCTL kube-inject --hub docker.io/ijsnellf --tag zipkin -f $(relative $APP_DIR/bookinfo.yaml) | sed s/proxy_debug/proxy/g "
-else
-    run "$ISTIOCTL kube-inject -f $(relative $APP_DIR/bookinfo.yaml)"    
-fi 
+
+run "$ISTIOCTL kube-inject -f $(relative $APP_DIR/bookinfo.yaml)"    
+
 
 
 desc "deploy the bookinfo app with istio proxy enabled"
-if [ "$2" == "--zipkin" ]; then
-    run "kubectl apply -f <($ISTIOCTL kube-inject --hub docker.io/ijsnellf --tag zipkin -f $(relative $APP_DIR/bookinfo.yaml) | sed s/proxy_debug/proxy/g)"
-else
-    run "kubectl apply -f <($ISTIOCTL kube-inject -f $(relative $APP_DIR/bookinfo.yaml))"        
-fi 
+run "kubectl apply -f <($ISTIOCTL kube-inject -f $(relative $APP_DIR/bookinfo.yaml))"        
 
 
 desc "take a look at the services we now have"

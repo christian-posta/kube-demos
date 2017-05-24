@@ -25,15 +25,9 @@ if [ "$1" == "--upstream" ]; then
     chmod +x $(relative cli/istioctl)
 fi
 
-if [ "$2" == "--zipkin" ]; then
-    INSTALL=$(relative zipkin/istio.yaml)
-fi
-
 echo "Using $INSTALL for the installation"
 echo "Using $ADDONS for the addons"
-if [ "$2" = "--zipkin" ]; then
-    echo "Yay! Installing Zipkin too!"
-fi
+
 echo "Press <enter> to continue..."
 read -s
 
