@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;\
 import org.springframework.web.bind.annotation.RestController;\
 \
 import java.util.HashMap;\
-import java.util.Map;")}1' src/main/java/com/example/SimpleHelloWorldApplication.java > tmp && mv tmp src/main/java/com/example/SimpleHelloWorldApplication.java
+import java.util.Map;")}1' src/main/java/com/example/simplehelloworld/SimpleHelloWorldApplication.java > tmp && mv tmp src/main/java/com/example/simplehelloworld/SimpleHelloWorldApplication.java
 
 
 awk '/<\/dependencies>/{x++} x==1{sub(/<\/dependencies>/,"&\n <dependencyManagement> \
@@ -55,7 +55,7 @@ awk '/<dependencies>/{x++} x==1{sub(/<dependencies>/,"&\n   \
 		")}1' pom.xml > tmp && mv tmp pom.xml
 
 
-cat <<EOF >> src/main/java/com/example/SimpleHelloWorldApplication.java
+cat <<EOF >> src/main/java/com/example/simplehelloworld/SimpleHelloWorldApplication.java
 
 
 @RestController()
