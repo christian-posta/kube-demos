@@ -2,11 +2,21 @@
 
 . $(dirname ${BASH_SOURCE})/../../util.sh
 
-desc "Install the 3Scale Gateway template"
-run "oc create -f https://raw.githubusercontent.com/3scale/docker-gateway/master/3scale-gateway-openshift-template.yml"
 
-desc "enter your provider key"
-read PROVIDER_KEY
+desc "enter your access token"
+read ACCESS_TOKEN
+
+desc "enter your admin site prefix (ie, prefix-admin.3scale.net)"
+read PREFIX
+
+desc "Create Secrets"
+run "oc secret new-basicauth apicast-configuration-url-secret --password=\"https://$ACCESS_TOKEN@$PREFIX-admin.3scale.net\""
 
 desc "Creating gateway"
-run "oc process 3scale-gateway -v THREESCALE_ADMIN_URL=https://ceposta-admin.3scale.net,THREESCALE_PROVIDER_KEY=$PROVIDER_KEY  | oc create -f -"
+run "curl -s -L https://raw.githubusercontent.com/3scale/3scale-amp-openshift-templates/2.0.0.GA-redhat-2/apicast-gateway/apicast.yml | sed 's/3scale-amp20/registry.access.redhat.com\/3scale-amp20/g' | oc new-app -f -"
+
+desc "Creating route"
+run "oc expose svc/apicast"
+
+desc "now create your API on 3scale, promote it to production, and try to curl it!"
+read -s
