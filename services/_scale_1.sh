@@ -2,7 +2,7 @@
 
 . $(dirname ${BASH_SOURCE})/../util.sh
 
-IP=$(kubectl --namespace=demos get svc hostnames \
+IP=$(kubectl --namespace=demos get svc deployment-demo \
         -o go-template='{{.spec.clusterIP}}')
 
 run "minishift ssh -- '\\

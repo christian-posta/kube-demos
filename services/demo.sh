@@ -5,27 +5,27 @@
 SOURCE_DIR=$PWD
 
 
-if kubectl --namespace=demos get rc hostnames >/dev/null 2>&1; then
-    desc "Revisit our replication controller"
-    run "kubectl --namespace=demos get rc hostnames"
+if kubectl --namespace=demos get deploy deployment-demo >/dev/null 2>&1; then
+    desc "Revisit our deployment"
+    run "kubectl --namespace=demos get deploy deployment-demo"
 else
-    desc "Let's return to hostnames, run some pods under a replication controller"
-    run "kubectl --namespace=demos create -f $(relative ../replication_controllers/rc.yaml)"
-    run "kubectl --namespace=demos get pods -l run=hostnames"
+    desc "Let's return to deployment ..."
+    run "kubectl --namespace=demos create -f $(relative ../deployment/deployment.yaml)"
+    run "kubectl --namespace=demos get pods -l demo=deployment"
 
 fi
 
-run "kubectl --namespace=demos get pods -l run=hostnames \\
+run "kubectl --namespace=demos get pods -l demo=deployment \\
     -o go-template='{{range .items}}{{.status.podIP}}{{\"\\n\"}}{{end}}'"
 
-desc "Expose the RC as a service"
-run "kubectl --namespace=demos expose rc hostnames \\
-    --port=80 --target-port=9376"
+desc "Expose the deployment as a service"
+run "kubectl --namespace=demos expose deploy deployment-demo \\
+    --port=80"
 
 desc "Have a look at the service"
-run "kubectl --namespace=demos describe svc hostnames"
+run "kubectl --namespace=demos describe svc deployment-demo"
 
-IP=$(kubectl --namespace=demos get svc hostnames \
+IP=$(kubectl --namespace=demos get svc deployment-demo \
     -o go-template='{{.spec.clusterIP}}')
 desc "See what happens when you access the service's IP"
 run "minishift ssh -- '\\
@@ -45,13 +45,13 @@ tmux split-window -v -d -c $SOURCE_DIR
 tmux send-keys -t bottom C-z './_scale_1.sh' Enter
 
 desc "Resize the RC and watch the service backends change"
-run "kubectl --namespace=demos scale rc hostnames --replicas=1"
-run "kubectl --namespace=demos scale rc hostnames --replicas=2"
-run "kubectl --namespace=demos scale rc hostnames --replicas=5"
+run "kubectl --namespace=demos scale deploy deployment-demo --replicas=1"
+run "kubectl --namespace=demos scale deploy deployment-demo --replicas=2"
+run "kubectl --namespace=demos scale deploy deployment-demo --replicas=5"
 
 tmux send-keys -t bottom C-c
 tmux send-keys -t bottom C-z 'exit' Enter
 
 desc "Let's cleanup and delete that deployment"
-run "kubectl --namespace=demos delete rc hostnames"
-run "kubectl --namespace=demos delete svc hostnames"
+run "kubectl --namespace=demos delete deploy deployment-demo"
+run "kubectl --namespace=demos delete svc deployment-demo"
