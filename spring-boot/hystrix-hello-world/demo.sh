@@ -47,7 +47,7 @@ run "mvn spring-boot:run"
 desc "Let's add the fabric8 magic!"
 desc "mvn io.fabric8:fabric8-maven-plugin:LATEST:setup"
 read -s
-run "mvn io.fabric8:fabric8-maven-plugin:3.1.71:setup"
+run "mvn io.fabric8:fabric8-maven-plugin:3.2.28:setup"
 run "tail -n 30 pom.xml"
 
 desc "Go update the service to use k8s service discovery"

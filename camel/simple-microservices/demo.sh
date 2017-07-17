@@ -9,7 +9,6 @@ SOURCE_DIR=$PWD
 
 desc "We now have a project with two microservices"
 run "cd $(relative project/simple-microservices) && ls -l"
-run "git checkout origin/ceposta-fix-swarm-generator"
 
 desc "Let's build and deploy the helloswarm service"
 run "cd helloswarm"

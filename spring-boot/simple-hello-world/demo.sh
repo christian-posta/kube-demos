@@ -42,7 +42,7 @@ desc "Let's add the fabric8 magic!"
 read -s
 desc "mvn io.fabric8:fabric8-maven-plugin:LATEST:setup"
 read -s
-run "mvn io.fabric8:fabric8-maven-plugin:3.1.71:setup"
+run "mvn io.fabric8:fabric8-maven-plugin:3.2.28:setup"
 run "tail -n 30 pom.xml"
 
 
