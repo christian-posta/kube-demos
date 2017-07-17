@@ -2,25 +2,24 @@
 
 . $(dirname ${BASH_SOURCE})/../../../util.sh
 
-APP_DIR=app
-
-ISTIOCTL="$(which istioctl)"
-
-ISTIO_LIST="$ISTIOCTL list"
+VERSION="0.1.6"
+APP_DIR=$(relative ../setup/binaries/istio-$VERSION/samples/apps/bookinfo)
+ISTIOCTL=$(relative ../setup/binaries/istio-$VERSION/bin/istioctl)
+ISTIO_SOURCE=$(relative ../setup/binaries/istio-$VERSION/istio.VERSION)
 
 if [ "$1" == "--upstream" ]; then
     echo "installing demo from upstream..."
     APP_DIR=$(relative ../setup/project/istio/samples/apps/bookinfo)
-    source $(relative ../setup/project/istio/istio.VERSION)
-    ISTIOCTL="$(relative ../setup/cli/istioctl)"
-    ISTIO_LIST="$ISTIOCTL get"
-        
+    ISTIO_SOURCE=$(relative ../setup/project/istio/istio.VERSION)
+    ISTIOCTL="$(relative ../setup/project/bin/istioctl)"           
 fi
 
 echo "Using APPDIR=$APP_DIR"
 echo "Using istioctl from $ISTIOCTL"
 echo "Press <enter> to continue..."
 read -s 
+
+source $ISTIO_SOURCE
 
 # Let's find the dashboard URL
 GRAFANA_HOST=$(oc get pod $(oc get pod | grep -i running | grep grafana | awk '{print $1 }') -o yaml | grep hostIP | cut -d ':' -f2 | xargs)
@@ -76,7 +75,7 @@ desc "we should set some routing rules for the istio proxy"
 read -s
 desc "we currently don't have any rules"
 read -s
-run "$ISTIO_LIST route-rule"
+run "$ISTIOCTL get route-rule"
 
 desc "We need to force all traffic to v1 of the reviews service"
 read -s
@@ -92,7 +91,7 @@ desc "Now go to the app and make sure all the traffic goes to the v1 reviews"
 read -s
 
 desc "now if we list the route rules, we should see our new rules"
-run "$ISTIO_LIST route-rule"
+run "$ISTIOCTL get route-rule"
 
 desc "we also see that these rules are stored in kubernetes as 'istioconfig'"
 desc "we can use vanilla kubernetes TPR to get these configs"
@@ -115,7 +114,7 @@ run "$ISTIOCTL create -f $APP_DIR/route-rule-reviews-test-v2.yaml"
 
 desc "let's look at the route rules"
 read -s
-run "$ISTIO_LIST route-rule"
+run "$ISTIOCTL get route-rule"
 run "$ISTIOCTL get route-rule reviews-test-v2"
 run "$ISTIOCTL get route-rule reviews-default"
 
@@ -133,7 +132,7 @@ read -s
 desc "let's inject some faults between the reviews v2 service and the ratings service"
 desc "we'll delay all traffic for 5s. everything should be okay since we have a 10s timeout'"
 read -s
-desc "see source here: https://github.com/istio/istio/blob/master/demos/apps/bookinfo/src/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java#L64"
+desc "see source here: https://github.com/istio/istio/blob/master/samples/apps/bookinfo/src/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java#L64"
 read -s
 run "cat $(relative $APP_DIR/destination-ratings-test-delay.yaml)"
 run "$ISTIOCTL create -f $(relative $APP_DIR/destination-ratings-test-delay.yaml)"
@@ -146,7 +145,7 @@ desc "We see that the product reviews are not available at all!!"
 desc "we've found a bug!"
 read -s
 desc "Dang! The product page has a timeout of 3s"
-desc "https://github.com/istio/istio/blob/master/demos/apps/bookinfo/src/productpage/productpage.py#L140"
+desc "https://github.com/istio/istio/blob/master/samples/apps/bookinfo/src/productpage/productpage.py#L140"
 
 read -s
 backtotop
