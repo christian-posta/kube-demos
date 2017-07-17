@@ -10,4 +10,5 @@ spring-boot/**/project/**
 ticket-monster-msa/**/project/**
 camel/**/project/**
 service-mesh/**/project/**
+service-mesh/**/binaries/**
 javac-services.**
