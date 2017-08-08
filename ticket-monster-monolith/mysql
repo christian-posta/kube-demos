@@ -1,0 +1,7 @@
+#!/bin/sh
+
+MYSQL_POD_NAME=$(kubectl get pod | grep Running | grep mysql | awk '{ print $1 }')
+MYSQL_POD_IP=$(kubectl describe pod $MYSQL_POD_NAME | grep IP | awk '{ print $2 }')
+
+kubectl exec -it $MYSQL_POD_NAME   -- /opt/rh/rh-mysql57/root/usr/bin/mysql -h$MYSQL_POD_IP -P3306 -uroot -padmin "$@" ticketmonster  2>&1 | grep -v "Warning: Using a password"
+
