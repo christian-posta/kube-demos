@@ -81,7 +81,7 @@ tmux send-keys -t 1 "docker logs -f connect" C-m
 # note: this will port forward to the minishift machine, but we need the port available locally
 # so let's do an SSH port forward. We have to make sure to clean this up when we're done. We'll
 # also add this to the cleanup.sh script
-command minishift ssh -- -vnNTL *:8083:$(minishift ip):8083 > /dev/null  2>&1 &
+command minikube ssh -- -vnNTL *:8083:$(minikube ip):8083 > /dev/null  2>&1 &
 
 
 read -s

@@ -20,10 +20,11 @@ echo "Press <enter> to continue..."
 read -s 
 
 source $ISTIO_SOURCE
+# also shoudl know about this: kube-inject --hub $PILOT_HUB --tag $PILOT_TAG
 
 # Let's find the dashboard URL
-GRAFANA_HOST=$(oc get pod $(oc get pod | grep -i running | grep grafana | awk '{print $1 }') -o yaml | grep hostIP | cut -d ':' -f2 | xargs)
-GRAFANA_PORT=$(oc get svc/grafana -o yaml | grep nodePort | cut -d ':' -f2 | xargs)
+GRAFANA_HOST=$(kubectl get pod $(kubectl get pod | grep -i running | grep grafana | awk '{print $1 }') -o yaml | grep hostIP | cut -d ':' -f2 | xargs)
+GRAFANA_PORT=$(kubectl get svc/grafana -o yaml | grep nodePort | cut -d ':' -f2 | xargs)
 ISTIO_GRAFANA_URL=http://$GRAFANA_HOST\:$GRAFANA_PORT/dashboard/db/istio-dashboard
 
 SERVICE_GRAPH=$(kubectl get po -l app=servicegraph -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc servicegraph -o jsonpath={.spec.ports[0].nodePort})
@@ -31,8 +32,8 @@ SERVICE_GRAPH_URL=http://$SERVICE_GRAPH/dotviz
 
 
 
-ZIPKIN_HOST=$(oc get pod $(oc get pod | grep -i running | grep zipkin | awk '{print $1 }') -o yaml | grep hostIP | cut -d ':' -f2 | xargs)
-ZIPKIN_PORT=$(oc get svc/zipkin -o yaml | grep nodePort | cut -d ':' -f2 | xargs)
+ZIPKIN_HOST=$(kubectl get pod $(kubectl get pod | grep -i running | grep zipkin | awk '{print $1 }') -o yaml | grep hostIP | cut -d ':' -f2 | xargs)
+ZIPKIN_PORT=$(kubectl get svc/zipkin -o yaml | grep nodePort | cut -d ':' -f2 | xargs)
 ISTIO_ZIPKIN_URL=http://$ZIPKIN_HOST\:$ZIPKIN_PORT/
 
 
