@@ -1,0 +1,1 @@
+kubectl delete routerule --all

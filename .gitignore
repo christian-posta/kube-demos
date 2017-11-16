@@ -12,3 +12,4 @@ camel/**/project/**
 service-mesh/**/project/**
 service-mesh/**/binaries/**
 javac-services.**
+/**/istio-0.2*/
