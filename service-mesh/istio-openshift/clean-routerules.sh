@@ -1,1 +1,1 @@
-kubectl delete routerule --all
+kubectl delete routerule --all -n istio-samples

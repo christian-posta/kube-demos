@@ -2,7 +2,8 @@
 
 . $(dirname ${BASH_SOURCE})/../../util.sh
 
-ISTIOVERSION=istio-0.2.12
+ISTIOVERSION=istio-0.3.0
+APP_NAMESPACE=istio-samples
 ISTIOCTL=$ISTIOVERSION/bin/istioctl
 APP_DIR=$ISTIOVERSION/samples/bookinfo/kube
 
@@ -20,19 +21,19 @@ read -s
 run "cat $(relative $APP_DIR/route-rule-all-v1.yaml)"
 
 desc "update the istio routing rules"
-run "$ISTIOCTL create -f $(relative $APP_DIR/route-rule-all-v1.yaml)"
+run "$ISTIOCTL create -f $(relative $APP_DIR/route-rule-all-v1.yaml) -n $APP_NAMESPACE"
 
 backtotop
 desc "Now go to the app and make sure all the traffic goes to the v1 reviews"
 read -s
 
 desc "now if we list the route rules, we should see our new rules"
-run "$ISTIOCTL get routerule"
+run "$ISTIOCTL get routerule "
 
 desc "we also see that these rules are stored in kubernetes as 'istioconfig'"
 desc "we can use vanilla kubernetes CRD to get these configs"
 read -s
-run "kubectl get routerule"
+run "kubectl get routerule "
 run "kubectl get routerule/ratings-default  -o yaml"
 
 backtotop
@@ -46,15 +47,15 @@ read -s
 run "cat $APP_DIR/route-rule-reviews-test-v2.yaml"
 
 desc "Let's make the change"
-run "$ISTIOCTL create -f $APP_DIR/route-rule-reviews-test-v2.yaml"
+run "$ISTIOCTL create -f $APP_DIR/route-rule-reviews-test-v2.yaml -n $APP_NAMESPACE"
 
 desc "let's look at the route rules"
 read -s
 run "$ISTIOCTL get routerule"
-run "$ISTIOCTL get routerule reviews-test-v2"
-run "$ISTIOCTL get routerule reviews-default"
+run "$ISTIOCTL get routerule reviews-test-v2 -n $APP_NAMESPACE"
+run "$ISTIOCTL get routerule reviews-default -n $APP_NAMESPACE"
 
-desc "No go to your browser and refresh the app.. should still see v1 of the reviews"
+desc "Now go to your browser and refresh the app.. should still see v1 of the reviews"
 desc "But if you login as jason, you should see the new, v2"
 
 read -s
@@ -71,7 +72,7 @@ read -s
 desc "see source here: https://github.com/istio/istio/blob/master/samples/bookinfo/src/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java#L79"
 read -s
 run "cat $(relative $APP_DIR/route-rule-ratings-test-delay.yaml )"
-run "$ISTIOCTL create -f $(relative $APP_DIR/route-rule-ratings-test-delay.yaml )"
+run "$ISTIOCTL create -f $(relative $APP_DIR/route-rule-ratings-test-delay.yaml ) -n $APP_NAMESPACE"
 
 backtotop
 desc "Now go to the productpage and test the delay"
@@ -105,7 +106,7 @@ desc "Run some tests to verify the 50/50 split"
 read -s
 
 desc "Install our new routing rule"
-run "$ISTIOCTL replace -f $(relative $APP_DIR/route-rule-reviews-50-v3.yaml)"
+run "$ISTIOCTL replace -f $(relative $APP_DIR/route-rule-reviews-50-v3.yaml) -n $APP_NAMESPACE"
 
 desc "If we're confident now this is a good change, we can route all traffic that way"
-run "$ISTIOCTL replace -f $(relative $APP_DIR/route-rule-reviews-v3.yaml)"
+run "$ISTIOCTL replace -f $(relative $APP_DIR/route-rule-reviews-v3.yaml) -n $APP_NAMESPACE"
